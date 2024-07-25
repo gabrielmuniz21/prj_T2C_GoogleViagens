@@ -165,7 +165,7 @@ class Bot(WebBot):
 
         #CLASSE COMENTADA POR PRECISAR DE PARÂMETROS CUSTOMIZADOS
         #DESCOMENTAR EM DESENVOLVIMENTO, apenas o que for necessário
-        var_clssSendEmail = T2CSendEmail(arg_strEmailServerSmtp="smtp-mail.outlook.com", arg_intEmailPortaSmtp="587", arg_strUsuario="gabriel.muniz@t2cgroup.com.br", arg_strSenha="Vdt@020516",arg_strNomeProcesso=var_strNomeProcesso, arg_clssMaestro=var_clssMaestro)
+        var_clssSendEmail = T2CSendEmail(arg_strEmailServerSmtp="smtp-mail.outlook.com", arg_intEmailPortaSmtp="587", arg_strUsuario="gabriel.muniz@t2cgroup.com.br", arg_strSenha="teste1123",arg_strNomeProcesso=var_strNomeProcesso, arg_clssMaestro=var_clssMaestro)
         # var_clssSendEmailOutlook = T2CSendEmailOutlook(arg_strNomeProcesso=var_strNomeProcesso, arg_clssMaestro=var_clssMaestro)
 
         #Enviando email de inicialização
