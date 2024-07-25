@@ -65,7 +65,7 @@ class T2CInitAllApplications:
 
         # Percorrer os 30 itens da tabela e obter o nome do País
         
-        for paises in range(1):
+        for paises in range(30):
             table = self.var_botWebbot.find_element(f'//*[@id="main"]/div[3]/div[2]/table/tbody/tr[{index}]', By.XPATH)
             var_strLinhaColuna = table.text
             var_strNomePais = re.findall(regex, var_strLinhaColuna)
