@@ -1,9 +1,8 @@
 from botcity.web import WebBot, Browser
 from botcity.core import DesktopBot
+from prj_T2C_GoogleViagens.acoes_site_viagens.preencher_excel_viagens import PreencherExcelViagens
 from prj_T2C_GoogleViagens.classes_t2c.utils.T2CMaestro import T2CMaestro, LogLevel, ErrorType
 from prj_T2C_GoogleViagens.classes_t2c.utils.T2CExceptions import BusinessRuleException
-from openpyxl import load_workbook
-import pandas as pd
 
 class T2CCloseAllApplications:
     """
@@ -31,6 +30,7 @@ class T2CCloseAllApplications:
             self.var_botDesktopbot = arg_botDesktopbot
             self.var_dictConfig = arg_dictConfig
             self.var_clssMaestro = arg_clssMaestro
+            self.preencher_excel_viagens = PreencherExcelViagens()
 
     def execute(self):
         """
@@ -55,36 +55,9 @@ class T2CCloseAllApplications:
             try:
                 self.var_clssMaestro.write_log("Finalizando todos os processos, tentativa " + (var_intTentativa+1).__str__())
                 #Insira aqui seu código para fechar os aplicativos
-
-                caminho_excel = 'prj_T2C_GoogleViagens/Precos_viagem.xlsx'
-                var_planilha_precos = load_workbook(caminho_excel)
-                
-                df = pd.read_excel(caminho_excel, sheet_name='Todos')
-        
-                # Garantir que a coluna 'Preço' é interpretada corretamente (remover 'R$' e converter para numérico)
-                df['Preço'] = df['Preço'].replace('[R$]', '', regex=True).astype(float)
-                
-                # Ordenar por preço e pegar as 10 linhas com os preços mais baixos
-                df_sorted = df.sort_values(by='Preço').head(10)
-                
-                # Carregar o arquivo Excel para escrita
-                with pd.ExcelWriter(caminho_excel, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
-                    var_planilha_precos = writer.book
-                    if 'Baratos' not in var_planilha_precos.sheetnames:
-                        var_wshtBaratos = var_planilha_precos.create_sheet(title='Baratos')
-                        var_wshtBaratos.append(['País', 'Cidade', 'Preço'])
-                    else:
-                        var_wshtBaratos = var_planilha_precos['Baratos']
-                        start_row = var_wshtBaratos.max_row + 1
-
-                    # Adiciona os dados na planilha 'Baratos'
-                    for row in df_sorted.itertuples(index=False, name=None):
-                        var_wshtBaratos.append(row)
-
-                    # Salvar o arquivo
-                    var_planilha_precos.save(caminho_excel)
-                    self.var_botWebbot.close_page()
-                    break
+                self.preencher_excel_viagens.salvarBaratos()
+                self.var_botWebbot.close_page()
+                break
 
             except BusinessRuleException as exception:
                 self.var_clssMaestro.write_log(arg_strMensagemLog="Erro de negócio: " + str(exception), arg_enumLogLevel=LogLevel.ERROR, arg_enumErrorType=ErrorType.BUSINESS_ERROR)
@@ -94,9 +67,7 @@ class T2CCloseAllApplications:
                 self.var_clssMaestro.write_log(arg_strMensagemLog="Erro, tentativa " + (var_intTentativa+1).__str__() + ": " + str(exception), arg_enumLogLevel=LogLevel.ERROR, arg_enumErrorType=ErrorType.APP_ERROR)
                 
                 if(var_intTentativa+1 == var_intMaxTentativas): raise
-                else: 
-                    #Incluir aqui seu código para tentar novamente
-                    
+                else:                     
                     continue
             else:
                 self.var_clssMaestro.write_log("Aplicativos finalizados, continuando processamento...")
